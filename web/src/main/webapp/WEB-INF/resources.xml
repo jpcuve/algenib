@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <Resource id="algenib-managed-data-source" type="DataSource">
+        JdbcDriver com.mysql.jdbc.Driver
+        JdbcUrl jdbc:mysql://localhost/com.darts
+        UserName algenib
+        Password al33ere
+        ConnectionProperties autoReconnect=true;useUnicode=true;characterEncoding=UTF-8;
+        JtaManaged true
+        ValidationQuery SELECT 1
+        TimeBetweenEvictionRunsMillis 30000
+        MinEvictableIdleTimeMillis 60000
+    </Resource>
+
+    <Resource id="algenib-unmanaged-data-source" type="DataSource">
+        JdbcDriver com.mysql.jdbc.Driver
+        JdbcUrl jdbc:mysql://localhost/com.darts
+        UserName algenib
+        Password al33ere
+        ConnectionProperties autoReconnect=true;useUnicode=true;characterEncoding=UTF-8;
+        JtaManaged false
+        ValidationQuery SELECT 1
+        TimeBetweenEvictionRunsMillis 30000
+        MinEvictableIdleTimeMillis 60000
+    </Resource>
+
+</resources>

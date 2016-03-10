@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html   xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:composite="http://java.sun.com/jsf/composite"
+        xmlns:components="http://java.sun.com/jsf/composite/components">
+<head/>
+<body>
+<composite:interface>
+    <composite:attribute name="jobItem" required="true"/>
+</composite:interface>
+<composite:implementation>
+
+    <h:panelGroup id="actions">
+        <p:commandButton action="#{cc.attrs.jobItem.reset()}" onclick="PF('pb_#{cc.attrs.jobItem.id}').stop();" icon="icon-fa fa fa-fw fa-fast-backward" update="progress, actions" rendered="#{cc.attrs.jobItem.running}"/>
+        <p:commandButton action="#{cc.attrs.jobItem.start()}" onclick="PF('pb_#{cc.attrs.jobItem.id}').start();" icon="icon-fa fa fa-fw fa-play" update="progress, actions" rendered="#{not cc.attrs.jobItem.running}"/>
+    </h:panelGroup>
+    <h:outputText value="#{cc.attrs.jobItem.name}"/>
+    <h:panelGroup id="progress">
+        <p:progressBar ajax="true" widgetVar="pb_#{cc.attrs.jobItem.id}" value="#{cc.attrs.jobItem.value}" labelTemplate="{value}%" interval="1000">
+            <p:ajax event="complete" update="progress"/>
+        </p:progressBar>
+        <ul>
+            <ui:repeat value="#{cc.attrs.jobItem.messages}" var="message">
+                <li>
+                    <h:outputText value="#{message}"/>
+                </li>
+            </ui:repeat>
+        </ul>
+    </h:panelGroup>
+
+</composite:implementation>
+</body>
+</html>
+
