@@ -1,16 +1,21 @@
 package com.darts.algenib.session.job;
 
 import com.darts.algenib.bean.JobItem;
+import com.darts.algenib.bean.MailEvent;
 import com.darts.algenib.entity.Binder;
 import com.darts.algenib.entity.Right;
 import com.darts.algenib.entity.TrademarkRight;
 import com.darts.algenib.session.Crud;
 import com.darts.algenib.session.Facade;
 import com.darts.algenib.util.BatchIterator;
+import com.darts.algenib.util.TextDataSource;
+import com.sun.corba.se.impl.orb.ParserTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.activation.DataSource;
 import javax.ejb.*;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.io.*;
@@ -33,19 +38,14 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss");
     @Inject
     private Facade facade;
-
-    private static String deleteTrademarkRight(final TrademarkRight trademarkRight){
-        final StringBuilder sb = new StringBuilder();
-        return sb.toString();
-
-
-    }
+    @Inject
+    private Event<MailEvent> mail;
 
     @Asynchronous
     @TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Future<Void> process(@NotNull JobItem jobItem) {
-        final List<Long> binderIds = facade.findByNamedQuery(Long.class, Binder.BINDER_IDS_FOR_TWO_DEFENDANT_TRADEMARKS);
+        final List<Long> binderIds = facade.getEntityManager().createNamedQuery(Binder.BINDER_IDS_FOR_TWO_DEFENDANT_TRADEMARKS, Long.class).getResultList();
 //        final List<Long> binderIds = Collections.singletonList(1825886L);
         jobItem.addMessage("Binders found: %s", binderIds.size());
         final BiPredicate<String, String> stringEquals = (s1, s2) -> (s1 == null ? "" : s1).equals(s2 == null ? "" : s2);
@@ -75,11 +75,11 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
             i++;
         }
         jobItem.addMessage("Trademark to be removed count: %s", trademarkToBeRemovedIds.size());
-        jobItem.addMessage("Done.");
-        jobItem.done();
         final String filename = "cleanup_unresolved_binders_with_pair_of_trademarks";
+        final String format = String.format("%s_%s.zip", filename, DATE_FORMAT.format(new Date()));
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try(
-                final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(String.format("%s_%s.zip", filename, DATE_FORMAT.format(new Date()))));
+                final ZipOutputStream zos = new ZipOutputStream(baos);
                 final PrintWriter w = new PrintWriter(zos)
         ) {
             zos.putNextEntry(new ZipEntry(String.format("%s.sql", filename)));
@@ -100,6 +100,30 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
         } catch(IOException e){
             LOGGER.error("cannot write output file");
         }
+        mail.fire(new MailEvent(Arrays.stream(new String[]{"jpcuvelliez@gmail.com"}).collect(Collectors.joining(",")), filename, new TextDataSource("Algenib output for: " + filename), new DataSource() {
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return new ByteArrayInputStream(baos.toByteArray());
+            }
+
+            @Override
+            public OutputStream getOutputStream() throws IOException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getContentType() {
+                return "application/zip";
+            }
+
+            @Override
+            public String getName() {
+                return format;
+            }
+        }));
+        jobItem.addMessage("Sent email to jpcuvelliez@gmail.com");
+        jobItem.addMessage("Done.");
+        jobItem.done();
         return null;
     }
 }

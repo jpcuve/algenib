@@ -3,7 +3,7 @@
 
     <Resource id="algenib-managed-data-source" type="DataSource">
         JdbcDriver com.mysql.jdbc.Driver
-        JdbcUrl jdbc:mysql://localhost/com.darts
+        JdbcUrl jdbc:mysql://localhost/darts
         UserName algenib
         Password al33ere
         ConnectionProperties autoReconnect=true;useUnicode=true;characterEncoding=UTF-8;
@@ -15,7 +15,7 @@
 
     <Resource id="algenib-unmanaged-data-source" type="DataSource">
         JdbcDriver com.mysql.jdbc.Driver
-        JdbcUrl jdbc:mysql://localhost/com.darts
+        JdbcUrl jdbc:mysql://localhost/darts
         UserName algenib
         Password al33ere
         ConnectionProperties autoReconnect=true;useUnicode=true;characterEncoding=UTF-8;

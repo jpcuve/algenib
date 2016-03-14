@@ -75,6 +75,10 @@ public class Crud {
         em.remove(em.getReference(clazz, pk));
     }
 
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
     private void applyParameters(Query query, Map<String, ?> parameters){
         for (final Map.Entry<String, ?> entry: parameters.entrySet()){
             query.setParameter(entry.getKey(), entry.getValue());

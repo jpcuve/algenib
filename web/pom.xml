@@ -5,13 +5,19 @@
     <artifactId>algenib-web</artifactId>
     <packaging>war</packaging>
     <parent>
-        <groupId>com.com.darts-ip</groupId>
+        <groupId>com.darts-ip</groupId>
         <artifactId>algenib</artifactId>
         <version>1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <dependencies>
+        <dependency>
+        	<groupId>org.apache.openejb</groupId>
+        	<artifactId>tomee-jaxrs</artifactId>
+        	<version>1.7.1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.openejb</groupId>
             <artifactId>javaee-api</artifactId>
