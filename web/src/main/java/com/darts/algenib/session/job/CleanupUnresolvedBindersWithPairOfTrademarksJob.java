@@ -90,6 +90,7 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
                 w.printf("delete from right_locarno where right_fk in (%s);%n", separated);
                 w.printf("delete from right_nice where right_fk in (%s);%n", separated);
                 w.printf("delete from right_vienna where right_fk in (%s);%n", separated);
+                w.printf("delete from nivilo_analysis where right_fk in (%s);%n", separated);
                 w.printf("delete from ip_right where id in (%s);%n", separated);
                 w.printf("delete from trademark_right_meaning where trademark_right_fk in (%s);%n", separated);
                 w.printf("delete from trademark_right_script where trademark_right_fk in (%s);%n", separated);
