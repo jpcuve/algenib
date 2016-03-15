@@ -60,6 +60,7 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
                 r1.getImages().equals(r2.getImages());
         int i = 0;
         final List<Long> trademarkToBeRemovedIds = new ArrayList<>();
+        final Set<Long> binderToBeUpdatedIds = new HashSet<>();
         for (long binderId: binderIds){
             if (i % 1000 == 0){
                 jobItem.progress(i, binderIds.size());
@@ -67,8 +68,10 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
             final List<Right> rights = facade.builder(Right.class).named(Right.RIGHT_FIND_BY_BINDER_FETCH_ALL).param("binderId", binderId).results();
             if (rightEquals.test(rights.get(0), rights.get(1))){
                 if (rights.get(0).getHonors().size() == 0){
+                    binderToBeUpdatedIds.add(binderId);
                     trademarkToBeRemovedIds.add(rights.get(0).getId());
                 } else if (rights.get(1).getHonors().size() == 0){
+                    binderToBeUpdatedIds.add(binderId);
                     trademarkToBeRemovedIds.add(rights.get(1).getId());
                 }
             }
@@ -95,6 +98,12 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
                 w.printf("delete from trademark_right_meaning where trademark_right_fk in (%s);%n", separated);
                 w.printf("delete from trademark_right_script where trademark_right_fk in (%s);%n", separated);
                 w.printf("delete from trademark_right where id in (%s);%n", separated);
+                w.flush();
+            }
+            for (Iterator<List<Long>> it = new BatchIterator<>(new ArrayList<>(binderToBeUpdatedIds), 1000); it.hasNext(); ) {
+                final List<Long> ids = it.next();
+                final String separated = ids.stream().map(id -> Long.toString(id)).collect(Collectors.joining(","));
+                w.printf("update binder set resolved=true for id in (%s);%n", separated);
                 w.flush();
             }
             zos.closeEntry();
