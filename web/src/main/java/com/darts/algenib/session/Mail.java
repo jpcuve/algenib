@@ -41,7 +41,7 @@ public class Mail {
                 return new PasswordAuthentication(username, password);
             }
         });
-        session.setDebug(true);
+//        session.setDebug(true);
         try {
             final Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("sagitta@gmail.com"));

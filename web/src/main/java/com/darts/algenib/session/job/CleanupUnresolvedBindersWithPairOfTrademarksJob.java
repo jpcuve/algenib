@@ -103,7 +103,7 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
             for (Iterator<List<Long>> it = new BatchIterator<>(new ArrayList<>(binderToBeUpdatedIds), 1000); it.hasNext(); ) {
                 final List<Long> ids = it.next();
                 final String separated = ids.stream().map(id -> Long.toString(id)).collect(Collectors.joining(","));
-                w.printf("update binder set resolved=true for id in (%s);%n", separated);
+                w.printf("update binder set resolved=true where id in (%s);%n", separated);
                 w.flush();
             }
             zos.closeEntry();

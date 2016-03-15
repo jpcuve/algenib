@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class Crud {
     private static final Logger LOGGER = LoggerFactory.getLogger(Crud.class);
-    @PersistenceContext(unitName = "simba")
+    @PersistenceContext(unitName = "algenib")
     protected EntityManager em;
 
     public <T> Builder<T> builder(Class<T> aClass){
@@ -174,47 +174,4 @@ public class Crud {
         em.remove(em.getReference(clazz, pk));
     }
 
-/*
-    private void applyParameters(Query query, Map<String, ?> parameters){
-        for (final Map.Entry<String, ?> entry: parameters.entrySet()){
-            query.setParameter(entry.getKey(), entry.getValue());
-        }
-    }
-
-    public <T> List<T> findByQuery(Class<T> clazz, String query){
-        return findByQuery(clazz, query, null);
-    }
-
-    public <T> List<T> findByQuery(Class<T> clazz, String query, Map<String, ?> parameters){
-        final TypedQuery<T> typedQuery = em.createQuery(query, clazz);
-        if (parameters != null){
-            applyParameters(typedQuery, parameters);
-        }
-        return typedQuery.getResultList();
-    }
-
-    public <T> List<T> findByNamedQuery(Class<T> clazz, String namedQuery){
-        return findByNamedQuery(clazz, namedQuery, null);
-    }
-
-    public <T> List<T> findByNamedQuery(Class<T> clazz, String namedQuery, Map<String, ?> parameters){
-        final TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, clazz);
-        if (parameters != null){
-            applyParameters(typedQuery, parameters);
-        }
-        return typedQuery.getResultList();
-    }
-
-    public int updateByNamedQuery(String namedQuery){
-        return updateByNamedQuery(namedQuery, null);
-    }
-
-    public int updateByNamedQuery(String namedQuery, Map<String, ?> parameters){
-        final Query query = em.createNamedQuery(namedQuery);
-        if (parameters != null){
-            applyParameters(query, parameters);
-        }
-        return query.executeUpdate();
-    }
-*/
 }
