@@ -45,7 +45,7 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
     @TransactionAttribute(TransactionAttributeType.NEVER)
     @Override
     public Future<Void> process(@NotNull JobItem jobItem) {
-        final List<Long> binderIds = facade.builder(Long.class).named(Binder.BINDER_IDS_FOR_TWO_DEFENDANT_TRADEMARKS).results();
+        final List<Long> binderIds = facade.results(Crud.builder(Long.class).named(Binder.BINDER_IDS_FOR_TWO_DEFENDANT_TRADEMARKS));
 //        final List<Long> binderIds = Collections.singletonList(1825886L);
         jobItem.addMessage("Binders found: %s", binderIds.size());
         final BiPredicate<String, String> stringEquals = (s1, s2) -> (s1 == null ? "" : s1).equals(s2 == null ? "" : s2);
@@ -65,7 +65,7 @@ public class CleanupUnresolvedBindersWithPairOfTrademarksJob implements Job<Void
             if (i % 1000 == 0){
                 jobItem.progress(i, binderIds.size());
             }
-            final List<Right> rights = facade.builder(Right.class).named(Right.RIGHT_FIND_BY_BINDER_FETCH_ALL).param("binderId", binderId).results();
+            final List<Right> rights = facade.results(Crud.builder(Right.class).named(Right.RIGHT_FIND_BY_BINDER_FETCH_ALL).param("binderId", binderId));
             if (rightEquals.test(rights.get(0), rights.get(1))){
                 if (rights.get(0).getHonors().size() == 0){
                     binderToBeUpdatedIds.add(binderId);

@@ -22,16 +22,15 @@ public class Crud {
     @PersistenceContext(unitName = "algenib")
     protected EntityManager em;
 
-    public <T> Builder<T> builder(Class<T> aClass){
-        return new Builder<>(em, aClass);
+    public static <T> Builder<T> builder(Class<T> aClass){
+        return new Builder<>(aClass);
     }
 
-    public <T> Builder<T> builder(){
-        return new Builder<>(em, null);
+    public static <T> Builder<T> builder(){
+        return new Builder<>(null);
     }
 
     public static class Builder<T> {
-        private final EntityManager em;
         private final Class<T> aClass;
         private boolean named;
         private String expression;
@@ -39,8 +38,7 @@ public class Crud {
         private int first = -1;
         private int limit = -1;
 
-        private Builder(EntityManager em, Class<T> aClass) {
-            this.em = em;
+        private Builder(Class<T> aClass) {
             this.aClass = aClass;
         }
 
@@ -96,38 +94,38 @@ public class Crud {
             }
         }
 
-        private Query apply(){
+        private Query build(EntityManager em){
             final Query q = named ? em.createNamedQuery(expression) : em.createQuery(expression);
             augment(q);
             return q;
         }
 
-        private TypedQuery<T> apply(Class<T> aClass){
+        private TypedQuery<T> buildTyped(EntityManager em){
             final TypedQuery<T> q = named ? em.createNamedQuery(expression, aClass) : em.createQuery(expression, aClass);
             augment(q);
             return q;
         }
 
-        public List<T> results(){
-            return apply(aClass).getResultList();
-        }
-
-        public T result(){
-            try{
-                return apply(aClass).getSingleResult();
-            } catch (NoResultException e){
-                return null;
-            }
-        }
-
-        public int update(){
-            return apply().executeUpdate();
-        }
-
     }
 
+    public <T> List<T> results(Builder<T> builder){
+        return builder.buildTyped(em).getResultList();
+    }
+
+    public <T> T result(Builder<T> builder){
+        try{
+            return builder.buildTyped(em).getSingleResult();
+        } catch (NoResultException e){
+            return null;
+        }
+    }
+
+    public int update(Builder builder){
+        return builder.build(em).executeUpdate();
+    }
+
+
     public <T> T create(T t){
-        assert t != null;
         refreshParents(t);
         em.persist(t);
         em.flush();
@@ -136,12 +134,10 @@ public class Crud {
     }
 
     public <T, ID extends Serializable> T findOne(Class<T> clazz, ID pk){
-        assert pk != null;
         return em.find(clazz, pk);
     }
 
     public <T> T update(T t){
-        assert t != null;
         refreshParents(t);
         return em.merge(t);
     }
@@ -156,8 +152,10 @@ public class Crud {
                     try{
                         final Object field = propertyDescriptor.getReadMethod().invoke(t, noArgs);
                         if (field != null){
-                            LOGGER.info("refresh parents, merging: {}", field);
-                            propertyDescriptor.getWriteMethod().invoke(t, em.merge(field));
+//                            LOGGER.debug("refresh parents, merging: {}", field);
+                            if (!em.contains(field)){
+                                propertyDescriptor.getWriteMethod().invoke(t, em.merge(field));
+                            }
                         }
                     } catch (IllegalAccessException| InvocationTargetException e2){
                         LOGGER.error("cannot access parent", e2);
@@ -170,8 +168,6 @@ public class Crud {
     }
 
     public <T, ID extends Serializable> void delete(Class<T> clazz, ID pk){
-        assert pk != null;
         em.remove(em.getReference(clazz, pk));
     }
-
 }
