@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * Created by jpc on 2/9/16.
  */
-public class Crud {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Crud.class);
+public class DAO {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DAO.class);
     @PersistenceContext(unitName = "algenib")
     protected EntityManager em;
 

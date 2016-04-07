@@ -5,15 +5,15 @@
 angular.module("client")
     .controller("mainController", ["$scope", "$log", "$resource", function($scope, $log, $resource){
         "use strict";
-        $log.info("main controller");
+        $log.log("main controller");
 
         $scope.message = "coucou";
 
         $scope.rpc = function(){
-            $log.debug("calling server");
-            var testResource = $resource("/algenib/test");
-            testResource.get(function(){
-                $log.debug("response received");
+            $log.log("calling server");
+            var testResource = $resource("http://localhost:8080/algenib/api/test");
+            $scope.res = testResource.get(function(){
+                $log.log("response received", angular.toJson($scope.res));
             });
         }
 

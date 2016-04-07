@@ -15,6 +15,6 @@ import java.io.Serializable;
 @Stateless(name = "algenib/facade")
 @LocalBean
 @TransactionAttribute(TransactionAttributeType.REQUIRED) // default, starts a new transaction if none present
-public class Facade extends Crud implements Serializable {
+public class Facade extends DAO implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Facade.class);
 }
