@@ -6,6 +6,7 @@ import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class RESTService {
     @GET
     public Map<String, Object> test(){
         final Map<String, Object> map = new HashMap<>();
-        map.put("response", "server response");
+        map.put("response", new Date().toString());
         return map;
     }
 }

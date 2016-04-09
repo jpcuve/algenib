@@ -101,14 +101,13 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>restricted pages</web-resource-name>
-            <url-pattern>/restricted/client/*</url-pattern>
+            <url-pattern>/restricted/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>CLIENT</role-name>
-            <role-name>ADMINISTRATOR</role-name>
-            <role-name>DEVELOPER</role-name>
+            <role-name>tomcat</role-name>
+            <role-name>role1</role-name>
         </auth-constraint>
 
         <user-data-constraint>
@@ -116,15 +115,15 @@
             <transport-guarantee>NONE</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>algenib</realm-name>
+    </login-config>
     <security-role>
-        <role-name>CLIENT</role-name>
+        <role-name>tomcat</role-name>
     </security-role>
     <security-role>
-        <role-name>ADMINISTRATOR</role-name>
-    </security-role>
-    <security-role>
-        <role-name>DEVELOPER</role-name>
+        <role-name>role1</role-name>
     </security-role>
 
 
